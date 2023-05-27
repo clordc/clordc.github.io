@@ -4,6 +4,19 @@
   
   
   <entry>
+    <title></title>
+    <link href="/2023/05/26/p4%E5%85%A5%E9%97%A8%EF%BC%88%E4%B8%80%EF%BC%89/"/>
+    <url>/2023/05/26/p4%E5%85%A5%E9%97%A8%EF%BC%88%E4%B8%80%EF%BC%89/</url>
+    
+    <content type="html"><![CDATA[<h1 id="P4入门（一）"><a href="#P4入门（一）" class="headerlink" title="P4入门（一）"></a>P4入门（一）</h1><hr><h2 id="PISA和openflow"><a href="#PISA和openflow" class="headerlink" title="PISA和openflow"></a>PISA和openflow</h2><p>openflow和P4都基于Programmable Hardwares（可编程硬件）的理念。openflow是再Control Plane（控制层）实时改写switch和router上的路由表。但是openflow存在许多问题，于是Protocol Independent Switch Architecture（PISA）诞生，从更底层入手把packet的转发最基础的过程高度抽象化，消除了openflow存在的很多问题。它的图示如下:<br><img src="https://raw.githubusercontent.com/clordc/blogImage/master/images/20230527101427.png" alt="PISA"></p><h2 id="P4简介"><a href="#P4简介" class="headerlink" title="P4简介"></a>P4简介</h2><p>P4是一种类似C语言的静态语言。代码文件的基本样式如下：<br><img src="https://raw.githubusercontent.com/clordc/blogImage/master/images/20230527101940.png" alt="20230527101940"></p><ul><li>Libraries: 类似C语言的库文件;</li><li>Declarations：定义基本数据结构，支持typedef;</li><li>Parse packet headers：放置解析headers的代码;</li><li>Control flow：代码的逻辑部分，定义Match-Action functions，按照定义的规则修改网络包里的内容（这里只有Ingress部分，还会有Egress部分）;</li><li>Assemble: Deparser部分把前面修改好的部分重新组装为一个新的packet转发;</li><li>main: 将定义好的部分按正确的顺序调用<ul><li>一般为三段式：Parser-&gt;Match-Action Pipeline-&gt;Deparser<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2>本篇简单介绍了P4的背景，架构，它的出现就是方便我们在不那么“灵活”的硬件上编写自己设计的“灵活”protocol。</li></ul></li></ul>]]></content>
+    
+    
+    
+  </entry>
+  
+  
+  
+  <entry>
     <title>About me</title>
     <link href="/2023/05/07/About-me/"/>
     <url>/2023/05/07/About-me/</url>

@@ -16,21 +16,24 @@
   <meta name="author" content="Oscar Cui">
   <meta name="keywords" content="">
   
-    <meta name="description" content="欢迎参观">
+    <meta name="description" content="P4入门（一） PISA和openflowopenflow和P4都基于Programmable Hardwares（可编程硬件）的理念。openflow是再Control Plane（控制层）实时改写switch和router上的路由表。但是openflow存在许多问题，于是Protocol Independent Switch Architecture（PISA）诞生，从更底层入手把packet">
 <meta property="og:type" content="article">
-<meta property="og:title" content="About me">
-<meta property="og:url" content="http://clordc.github.io/2023/05/07/About-me/index.html">
+<meta property="og:title" content="崔崔的小窝">
+<meta property="og:url" content="http://clordc.github.io/2023/05/26/p4%E5%85%A5%E9%97%A8%EF%BC%88%E4%B8%80%EF%BC%89/index.html">
 <meta property="og:site_name" content="崔崔的小窝">
-<meta property="og:description" content="欢迎参观">
+<meta property="og:description" content="P4入门（一） PISA和openflowopenflow和P4都基于Programmable Hardwares（可编程硬件）的理念。openflow是再Control Plane（控制层）实时改写switch和router上的路由表。但是openflow存在许多问题，于是Protocol Independent Switch Architecture（PISA）诞生，从更底层入手把packet">
 <meta property="og:locale" content="zh_CN">
-<meta property="article:published_time" content="2023-05-07T11:20:34.000Z">
-<meta property="article:modified_time" content="2023-05-07T11:20:34.156Z">
+<meta property="og:image" content="https://raw.githubusercontent.com/clordc/blogImage/master/images/20230527101427.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/clordc/blogImage/master/images/20230527101940.png">
+<meta property="article:published_time" content="2023-05-26T08:49:42.425Z">
+<meta property="article:modified_time" content="2023-05-27T02:42:31.863Z">
 <meta property="article:author" content="Oscar Cui">
 <meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://raw.githubusercontent.com/clordc/blogImage/master/images/20230527101427.png">
   
   
   
-  <title>About me - 崔崔的小窝</title>
+  <title>崔崔的小窝</title>
 
   <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
 
@@ -196,7 +199,7 @@
       <div class="banner-text text-center fade-in-up">
         <div class="h2">
           
-            <span id="subtitle" data-typed-text="About me"></span>
+            <span id="subtitle" data-typed-text=""></span>
           
         </div>
 
@@ -207,8 +210,8 @@
     
       <span class="post-meta">
         <i class="iconfont icon-date-fill" aria-hidden="true"></i>
-        <time datetime="2023-05-07 19:20" pubdate>
-          2023年5月7日 晚上
+        <time datetime="2023-05-26 16:49" pubdate>
+          2023年5月26日 下午
         </time>
       </span>
     
@@ -219,7 +222,7 @@
       <span class="post-meta mr-2">
         <i class="iconfont icon-chart"></i>
         
-          0 字
+          618 字
         
       </span>
     
@@ -230,7 +233,7 @@
         
         
         
-          1 分钟
+          6 分钟
         
       </span>
     
@@ -268,12 +271,26 @@
         <div id="board">
           <article class="post-content mx-auto">
             <!-- SEO header -->
-            <h1 style="display: none">About me</h1>
+            <h1 style="display: none"></h1>
             
             
               <div class="markdown-body">
                 
-                
+                <h1 id="P4入门（一）"><a href="#P4入门（一）" class="headerlink" title="P4入门（一）"></a>P4入门（一）</h1><hr>
+<h2 id="PISA和openflow"><a href="#PISA和openflow" class="headerlink" title="PISA和openflow"></a>PISA和openflow</h2><p>openflow和P4都基于Programmable Hardwares（可编程硬件）的理念。openflow是再Control Plane（控制层）实时改写switch和router上的路由表。但是openflow存在许多问题，于是Protocol Independent Switch Architecture（PISA）诞生，从更底层入手把packet的转发最基础的过程高度抽象化，消除了openflow存在的很多问题。它的图示如下:<br><img src="https://raw.githubusercontent.com/clordc/blogImage/master/images/20230527101427.png" srcset="/img/loading.gif" lazyload alt="PISA"></p>
+<h2 id="P4简介"><a href="#P4简介" class="headerlink" title="P4简介"></a>P4简介</h2><p>P4是一种类似C语言的静态语言。代码文件的基本样式如下：<br><img src="https://raw.githubusercontent.com/clordc/blogImage/master/images/20230527101940.png" srcset="/img/loading.gif" lazyload alt="20230527101940"></p>
+<ul>
+<li>Libraries: 类似C语言的库文件;</li>
+<li>Declarations：定义基本数据结构，支持typedef;</li>
+<li>Parse packet headers：放置解析headers的代码;</li>
+<li>Control flow：代码的逻辑部分，定义Match-Action functions，按照定义的规则修改网络包里的内容（这里只有Ingress部分，还会有Egress部分）;</li>
+<li>Assemble: Deparser部分把前面修改好的部分重新组装为一个新的packet转发;</li>
+<li>main: 将定义好的部分按正确的顺序调用<ul>
+<li>一般为三段式：Parser-&gt;Match-Action Pipeline-&gt;Deparser<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2>本篇简单介绍了P4的背景，架构，它的出现就是方便我们在不那么“灵活”的硬件上编写自己设计的“灵活”protocol。</li>
+</ul>
+</li>
+</ul>
+
                 
               </div>
             
@@ -290,8 +307,8 @@
 
   <div class="license-box my-3">
     <div class="license-title">
-      <div>About me</div>
-      <div>http://clordc.github.io/2023/05/07/About-me/</div>
+      <div></div>
+      <div>http://clordc.github.io/2023/05/26/p4入门（一）/</div>
     </div>
     <div class="license-meta">
       
@@ -303,7 +320,7 @@
       
         <div class="license-meta-item license-meta-date">
           <div>发布于</div>
-          <div>2023年5月7日</div>
+          <div>2023年5月26日</div>
         </div>
       
       
@@ -335,18 +352,12 @@
                   <article class="post-prev col-6">
                     
                     
-                      <a href="/2023/05/26/p4%E5%85%A5%E9%97%A8%EF%BC%88%E4%B8%80%EF%BC%89/" title="">
-                        <i class="iconfont icon-arrowleft"></i>
-                        <span class="hidden-mobile"></span>
-                        <span class="visible-mobile">上一篇</span>
-                      </a>
-                    
                   </article>
                   <article class="post-next col-6">
                     
                     
-                      <a href="/2023/05/01/hello-world/" title="Hello World">
-                        <span class="hidden-mobile">Hello World</span>
+                      <a href="/2023/05/07/About-me/" title="About me">
+                        <span class="hidden-mobile">About me</span>
                         <span class="visible-mobile">下一篇</span>
                         <i class="iconfont icon-arrowright"></i>
                       </a>
@@ -369,7 +380,7 @@
         var options = Object.assign(
           {"clientID":"b1e31edd097d2c47df0f","clientSecret":"a0312ee318c7c5e94fb2a7e1249af429d1ee0110","repo":"clordc.github.io","owner":"clordc","admin":["clordc"],"language":"zh-CN","labels":["Gitalk"],"perPage":10,"pagerDirection":"last","distractionFreeMode":true,"createIssueManually":true,"proxy":"https://cloudflare-cors-anywhere.bencorn.com/?https://github.com/login/oauth/access_token"},
           {
-            id: 'b49c2979c7b75f26d1a0622028245523'
+            id: '0f5bfb83f779b86f3a721f3f17345bd8'
           }
         )
         var gitalk = new Gitalk(options);
