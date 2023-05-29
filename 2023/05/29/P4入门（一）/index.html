@@ -16,24 +16,24 @@
   <meta name="author" content="Oscar Cui">
   <meta name="keywords" content="">
   
-    <meta name="description" content="P4入门（一） PISA和openflowopenflow和P4都基于Programmable Hardwares（可编程硬件）的理念。openflow是再Control Plane（控制层）实时改写switch和router上的路由表。但是openflow存在许多问题，于是Protocol Independent Switch Architecture（PISA）诞生，从更底层入手把packet">
+    <meta name="description" content="P4入门（一）PISA和openflowopenflow和P4都基于Programmable Hardwares（可编程硬件）的理念。openflow是再Control Plane（控制层）实时改写switch和router上的路由表。但是openflow存在许多问题，于是Protocol Independent Switch Architecture（PISA）诞生，从更底层入手把packet的">
 <meta property="og:type" content="article">
-<meta property="og:title" content="崔崔的小窝">
-<meta property="og:url" content="http://clordc.github.io/2023/05/26/p4%E5%85%A5%E9%97%A8%EF%BC%88%E4%B8%80%EF%BC%89/index.html">
+<meta property="og:title" content="P4入门（一）">
+<meta property="og:url" content="http://clordc.github.io/2023/05/29/P4%E5%85%A5%E9%97%A8%EF%BC%88%E4%B8%80%EF%BC%89/index.html">
 <meta property="og:site_name" content="崔崔的小窝">
-<meta property="og:description" content="P4入门（一） PISA和openflowopenflow和P4都基于Programmable Hardwares（可编程硬件）的理念。openflow是再Control Plane（控制层）实时改写switch和router上的路由表。但是openflow存在许多问题，于是Protocol Independent Switch Architecture（PISA）诞生，从更底层入手把packet">
+<meta property="og:description" content="P4入门（一）PISA和openflowopenflow和P4都基于Programmable Hardwares（可编程硬件）的理念。openflow是再Control Plane（控制层）实时改写switch和router上的路由表。但是openflow存在许多问题，于是Protocol Independent Switch Architecture（PISA）诞生，从更底层入手把packet的">
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="https://raw.githubusercontent.com/clordc/blogImage/master/images/20230527101427.png">
 <meta property="og:image" content="https://raw.githubusercontent.com/clordc/blogImage/master/images/20230527101940.png">
-<meta property="article:published_time" content="2023-05-26T08:49:42.425Z">
-<meta property="article:modified_time" content="2023-05-27T02:42:31.863Z">
+<meta property="article:published_time" content="2023-05-29T07:39:17.000Z">
+<meta property="article:modified_time" content="2023-05-29T07:40:18.632Z">
 <meta property="article:author" content="Oscar Cui">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:image" content="https://raw.githubusercontent.com/clordc/blogImage/master/images/20230527101427.png">
   
   
   
-  <title>崔崔的小窝</title>
+  <title>P4入门（一） - 崔崔的小窝</title>
 
   <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
 
@@ -199,7 +199,7 @@
       <div class="banner-text text-center fade-in-up">
         <div class="h2">
           
-            <span id="subtitle" data-typed-text=""></span>
+            <span id="subtitle" data-typed-text="P4入门（一）"></span>
           
         </div>
 
@@ -210,8 +210,8 @@
     
       <span class="post-meta">
         <i class="iconfont icon-date-fill" aria-hidden="true"></i>
-        <time datetime="2023-05-26 16:49" pubdate>
-          2023年5月26日 下午
+        <time datetime="2023-05-29 15:39" pubdate>
+          2023年5月29日 下午
         </time>
       </span>
     
@@ -271,13 +271,12 @@
         <div id="board">
           <article class="post-content mx-auto">
             <!-- SEO header -->
-            <h1 style="display: none"></h1>
+            <h1 style="display: none">P4入门（一）</h1>
             
             
               <div class="markdown-body">
                 
-                <h1 id="P4入门（一）"><a href="#P4入门（一）" class="headerlink" title="P4入门（一）"></a>P4入门（一）</h1><hr>
-<h2 id="PISA和openflow"><a href="#PISA和openflow" class="headerlink" title="PISA和openflow"></a>PISA和openflow</h2><p>openflow和P4都基于Programmable Hardwares（可编程硬件）的理念。openflow是再Control Plane（控制层）实时改写switch和router上的路由表。但是openflow存在许多问题，于是Protocol Independent Switch Architecture（PISA）诞生，从更底层入手把packet的转发最基础的过程高度抽象化，消除了openflow存在的很多问题。它的图示如下:<br><img src="https://raw.githubusercontent.com/clordc/blogImage/master/images/20230527101427.png" srcset="/img/loading.gif" lazyload alt="PISA"></p>
+                <h1 id="P4入门（一）"><a href="#P4入门（一）" class="headerlink" title="P4入门（一）"></a>P4入门（一）</h1><h2 id="PISA和openflow"><a href="#PISA和openflow" class="headerlink" title="PISA和openflow"></a>PISA和openflow</h2><p>openflow和P4都基于Programmable Hardwares（可编程硬件）的理念。openflow是再Control Plane（控制层）实时改写switch和router上的路由表。但是openflow存在许多问题，于是Protocol Independent Switch Architecture（PISA）诞生，从更底层入手把packet的转发最基础的过程高度抽象化，消除了openflow存在的很多问题。它的图示如下:<br><img src="https://raw.githubusercontent.com/clordc/blogImage/master/images/20230527101427.png" srcset="/img/loading.gif" lazyload alt="PISA"></p>
 <h2 id="P4简介"><a href="#P4简介" class="headerlink" title="P4简介"></a>P4简介</h2><p>P4是一种类似C语言的静态语言。代码文件的基本样式如下：<br><img src="https://raw.githubusercontent.com/clordc/blogImage/master/images/20230527101940.png" srcset="/img/loading.gif" lazyload alt="20230527101940"></p>
 <ul>
 <li>Libraries: 类似C语言的库文件;</li>
@@ -286,10 +285,11 @@
 <li>Control flow：代码的逻辑部分，定义Match-Action functions，按照定义的规则修改网络包里的内容（这里只有Ingress部分，还会有Egress部分）;</li>
 <li>Assemble: Deparser部分把前面修改好的部分重新组装为一个新的packet转发;</li>
 <li>main: 将定义好的部分按正确的顺序调用<ul>
-<li>一般为三段式：Parser-&gt;Match-Action Pipeline-&gt;Deparser<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2>本篇简单介绍了P4的背景，架构，它的出现就是方便我们在不那么“灵活”的硬件上编写自己设计的“灵活”protocol。</li>
+<li>一般为三段式：Parser-&gt;Match-Action Pipeline-&gt;Deparser</li>
 </ul>
 </li>
 </ul>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>本篇简单介绍了P4的背景，架构，它的出现就是方便我们在不那么“灵活”的硬件上编写自己设计的“灵活”protocol。</p>
 
                 
               </div>
@@ -307,8 +307,8 @@
 
   <div class="license-box my-3">
     <div class="license-title">
-      <div></div>
-      <div>http://clordc.github.io/2023/05/26/p4入门（一）/</div>
+      <div>P4入门（一）</div>
+      <div>http://clordc.github.io/2023/05/29/P4入门（一）/</div>
     </div>
     <div class="license-meta">
       
@@ -320,7 +320,7 @@
       
         <div class="license-meta-item license-meta-date">
           <div>发布于</div>
-          <div>2023年5月26日</div>
+          <div>2023年5月29日</div>
         </div>
       
       
@@ -380,7 +380,7 @@
         var options = Object.assign(
           {"clientID":"b1e31edd097d2c47df0f","clientSecret":"a0312ee318c7c5e94fb2a7e1249af429d1ee0110","repo":"clordc.github.io","owner":"clordc","admin":["clordc"],"language":"zh-CN","labels":["Gitalk"],"perPage":10,"pagerDirection":"last","distractionFreeMode":true,"createIssueManually":true,"proxy":"https://cloudflare-cors-anywhere.bencorn.com/?https://github.com/login/oauth/access_token"},
           {
-            id: '0f5bfb83f779b86f3a721f3f17345bd8'
+            id: '6be0a533288f0573b4271aec6d061f32'
           }
         )
         var gitalk = new Gitalk(options);
