@@ -16,17 +16,26 @@
   <meta name="author" content="Oscar Cui">
   <meta name="keywords" content="">
   
-    <meta name="description" content="欢迎参观">
+    <meta name="description" content="Chatgpt的本地化部署优点：  没有登陆限制 不会被封号 没有ip限制  免去每次使用GPT都需要科学上网的麻烦 该项目来源于Github上的项目pandora 本文内容参考博客 一篇文章教你使用Docker本地化部署Chatgpt（非api，速度非常快！！！）及裸连GPT的方式（告别镜像GPT） 如对本文内容有疑惑请与该博客内容对照，想必会有解答. 1.下载安装DockerDocker官网：">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Chatgpt本地部署">
 <meta property="og:url" content="http://clordc.github.io/2023/11/16/Chatgpt%E6%9C%AC%E5%9C%B0%E9%83%A8%E7%BD%B2/index.html">
 <meta property="og:site_name" content="崔崔的小窝">
-<meta property="og:description" content="欢迎参观">
+<meta property="og:description" content="Chatgpt的本地化部署优点：  没有登陆限制 不会被封号 没有ip限制  免去每次使用GPT都需要科学上网的麻烦 该项目来源于Github上的项目pandora 本文内容参考博客 一篇文章教你使用Docker本地化部署Chatgpt（非api，速度非常快！！！）及裸连GPT的方式（告别镜像GPT） 如对本文内容有疑惑请与该博客内容对照，想必会有解答. 1.下载安装DockerDocker官网：">
 <meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://clordc.github.io/2023/11/16/Chatgpt%E6%9C%AC%E5%9C%B0%E9%83%A8%E7%BD%B2/docker.png">
+<meta property="og:image" content="http://clordc.github.io/2023/11/16/Chatgpt%E6%9C%AC%E5%9C%B0%E9%83%A8%E7%BD%B2/wslupdate.png">
+<meta property="og:image" content="http://clordc.github.io/2023/11/16/Chatgpt%E6%9C%AC%E5%9C%B0%E9%83%A8%E7%BD%B2/wsl_powershell.png">
+<meta property="og:image" content="http://clordc.github.io/2023/11/16/Chatgpt%E6%9C%AC%E5%9C%B0%E9%83%A8%E7%BD%B2/dockerpull.png">
+<meta property="og:image" content="http://clordc.github.io/2023/11/16/Chatgpt%E6%9C%AC%E5%9C%B0%E9%83%A8%E7%BD%B2/Dockercontainer.png">
+<meta property="og:image" content="http://clordc.github.io/2023/11/16/Chatgpt%E6%9C%AC%E5%9C%B0%E9%83%A8%E7%BD%B2/login.png">
+<meta property="og:image" content="http://clordc.github.io/2023/11/16/Chatgpt%E6%9C%AC%E5%9C%B0%E9%83%A8%E7%BD%B2/token.png">
+<meta property="og:image" content="http://clordc.github.io/2023/11/16/Chatgpt%E6%9C%AC%E5%9C%B0%E9%83%A8%E7%BD%B2/ChatGPT.png">
 <meta property="article:published_time" content="2023-11-16T04:22:20.000Z">
-<meta property="article:modified_time" content="2023-11-16T04:22:20.583Z">
+<meta property="article:modified_time" content="2023-11-23T13:04:52.159Z">
 <meta property="article:author" content="Oscar Cui">
 <meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="http://clordc.github.io/2023/11/16/Chatgpt%E6%9C%AC%E5%9C%B0%E9%83%A8%E7%BD%B2/docker.png">
   
   
   
@@ -219,7 +228,7 @@
       <span class="post-meta mr-2">
         <i class="iconfont icon-chart"></i>
         
-          0 字
+          1k 字
         
       </span>
     
@@ -230,7 +239,7 @@
         
         
         
-          1 分钟
+          9 分钟
         
       </span>
     
@@ -273,7 +282,31 @@
             
               <div class="markdown-body">
                 
-                
+                <h1 id="Chatgpt的本地化部署"><a href="#Chatgpt的本地化部署" class="headerlink" title="Chatgpt的本地化部署"></a>Chatgpt的本地化部署</h1><p>优点：</p>
+<ul>
+<li>没有登陆限制</li>
+<li>不会被封号</li>
+<li>没有ip限制</li>
+</ul>
+<p>免去每次使用GPT都需要科学上网的麻烦</p>
+<p>该项目来源于Github上的项目<a target="_blank" rel="noopener" href="https://github.com/pengzhile/pandora" title="潘多拉，一个让你呼吸顺畅的ChatGPT">pandora</a></p>
+<p>本文内容参考博客 <a target="_blank" rel="noopener" href="https://blog.csdn.net/kingxzq/article/details/132401393" title="原博客地址">一篇文章教你使用Docker本地化部署Chatgpt（非api，速度非常快！！！）及裸连GPT的方式（告别镜像GPT）</a> 如对本文内容有疑惑请与该博客内容对照，想必会有解答.</p>
+<h2 id="1-下载安装Docker"><a href="#1-下载安装Docker" class="headerlink" title="1.下载安装Docker"></a>1.下载安装Docker</h2><p>Docker官网： <a target="_blank" rel="noopener" href="https://www.docker.com/&quot;docker官网&quot;">https://www.docker.com/</a><br><img src="/2023/11/16/Chatgpt%E6%9C%AC%E5%9C%B0%E9%83%A8%E7%BD%B2/docker.png" srcset="/img/loading.gif" lazyload class="" title="docker官网"></p>
+<p>之后进行傻瓜式安装，安装完成后会关闭重启一次，打开Docker会看到如下界面：<br><img src="/2023/11/16/Chatgpt%E6%9C%AC%E5%9C%B0%E9%83%A8%E7%BD%B2/wslupdate.png" srcset="/img/loading.gif" lazyload class="" title="需要更新wsl"></p>
+<p>提醒我们需要升级Windows下linux内核，打开powershell，输入以下命令：<br>‘wsl —update’<br><img src="/2023/11/16/Chatgpt%E6%9C%AC%E5%9C%B0%E9%83%A8%E7%BD%B2/wsl_powershell.png" srcset="/img/loading.gif" lazyload class="" title="在powershell中更新wsl"></p>
+<p>安装完后成功打开Docker</p>
+<h2 id="2-拉取pandora的Docker镜像"><a href="#2-拉取pandora的Docker镜像" class="headerlink" title="2.拉取pandora的Docker镜像"></a>2.拉取pandora的Docker镜像</h2><p>输入命令 ‘docker pull pengzhile/pandora’</p>
+<p>拉取pandora的Docker镜像<br><img src="/2023/11/16/Chatgpt%E6%9C%AC%E5%9C%B0%E9%83%A8%E7%BD%B2/dockerpull.png" srcset="/img/loading.gif" lazyload class="" title="拉取docker镜像"></p>
+<h2 id="3-创建Docker容器"><a href="#3-创建Docker容器" class="headerlink" title="3.创建Docker容器"></a>3.创建Docker容器</h2><p>输入命令 ‘docker run  -e PANDORA_CLOUD=cloud -e PANDORA_SERVER=0.0.0.0:8888 -p 8888:8888 -d pengzhile/pandora’ </p>
+<p>创建并运行Docker容器，将容器映射到8888端口.部署完成后可以在界面看到对应容器.</p>
+<img src="/2023/11/16/Chatgpt%E6%9C%AC%E5%9C%B0%E9%83%A8%E7%BD%B2/Dockercontainer.png" srcset="/img/loading.gif" lazyload class="" title="Docker容器">
+<p>之后也可以在这里删除这个项目</p>
+<h2 id="4-登录ChatGPT"><a href="#4-登录ChatGPT" class="headerlink" title="4.登录ChatGPT"></a>4.登录ChatGPT</h2><p>打开浏览器地址输入<br>‘<a target="_blank" rel="noopener" href="http://127.0.0.1:8888">http://127.0.0.1:8888</a>‘<br>端口号取决于刚才的设置，可以自定义为其他非特殊端口，例如80、443等.进入后能看到如下页面：<br><img src="/2023/11/16/Chatgpt%E6%9C%AC%E5%9C%B0%E9%83%A8%E7%BD%B2/login.png" srcset="/img/loading.gif" lazyload class="" title="ChatGPT login"></p>
+<p>如果使用邮箱密码登录也需要普通科学上网，下面介绍能不需要普通科学上网的方法使用ChatGPT，并且相应速度与官网相当甚至更快.<br>使用下面Token登陆方式，能够直接裸连ChatGPT，但是只有10天的有效认证期，过期后需要重新拉取Token.如何拉取Token呢？在我们科学上网登录ChatGPT后，输入网址’<a target="_blank" rel="noopener" href="https://chat.openai.com/api/auth/session&#39;回车后，如下图">https://chat.openai.com/api/auth/session&#39;回车后，如下图</a>:<br><img src="/2023/11/16/Chatgpt%E6%9C%AC%E5%9C%B0%E9%83%A8%E7%BD%B2/token.png" srcset="/img/loading.gif" lazyload class="" title="Token"></p>
+<p>上图中选中的部分就是账号的Token，即accessToken后的双引号内的所有内容，我们复制粘贴到Token登陆方式的框中后点击OK.之后就成功登陆啦！</p>
+<img src="/2023/11/16/Chatgpt%E6%9C%AC%E5%9C%B0%E9%83%A8%E7%BD%B2/ChatGPT.png" srcset="/img/loading.gif" lazyload class="" title="GPT">
+<p>使用方法和官网一样，并且会同步账号的历史记录，这种方式只是绕过了GPT的Cloud flare的IP检测，之后即可畅快使用GPT，没有网络限制的烦恼，也不需要担心速度的问题.</p>
+
                 
               </div>
             
