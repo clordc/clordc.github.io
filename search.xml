@@ -41,30 +41,31 @@
   <entry>
     <title>Chatgpt本地部署</title>
     <url>/2023/11/16/Chatgpt%E6%9C%AC%E5%9C%B0%E9%83%A8%E7%BD%B2/</url>
-    <content><![CDATA[<h1 id="Chatgpt的本地化部署"><a href="#Chatgpt的本地化部署" class="headerlink" title="Chatgpt的本地化部署"></a>Chatgpt的本地化部署</h1><p>优点：</p>
+    <content><![CDATA[<h1 id="Chatgpt-的本地化部署"><a href="#Chatgpt-的本地化部署" class="headerlink" title="Chatgpt 的本地化部署"></a>Chatgpt 的本地化部署</h1><p>优点：</p>
 <ul>
 <li>没有登陆限制</li>
 <li>不会被封号</li>
-<li>没有ip限制</li>
+<li>没有 ip 限制</li>
 </ul>
-<p>免去每次使用GPT都需要科学上网的麻烦</p>
-<p>该项目来源于Github上的项目<a href="https://github.com/pengzhile/pandora" title="潘多拉，一个让你呼吸顺畅的ChatGPT">pandora</a></p>
-<p>本文内容参考博客 <a href="https://blog.csdn.net/kingxzq/article/details/132401393" title="原博客地址">一篇文章教你使用Docker本地化部署Chatgpt（非api，速度非常快！！！）及裸连GPT的方式（告别镜像GPT）</a> 如对本文内容有疑惑请与该博客内容对照，想必会有解答.</p>
-<h2 id="1-下载安装Docker"><a href="#1-下载安装Docker" class="headerlink" title="1.下载安装Docker"></a>1.下载安装Docker</h2><p>Docker官网： <a href="https://www.docker.com/&quot;docker官网&quot;">https://www.docker.com/</a><br><img src="/2023/11/16/Chatgpt%E6%9C%AC%E5%9C%B0%E9%83%A8%E7%BD%B2/docker.png" class="" title="docker官网"></p>
-<p>之后进行傻瓜式安装，安装完成后会关闭重启一次，打开Docker会看到如下界面：<br><img src="/2023/11/16/Chatgpt%E6%9C%AC%E5%9C%B0%E9%83%A8%E7%BD%B2/wslupdate.png" class="" title="需要更新wsl"></p>
-<p>提醒我们需要升级Windows下linux内核，打开powershell，输入以下命令：<br>‘wsl —update’<br><img src="/2023/11/16/Chatgpt%E6%9C%AC%E5%9C%B0%E9%83%A8%E7%BD%B2/wsl_powershell.png" class="" title="在powershell中更新wsl"></p>
-<p>安装完后成功打开Docker</p>
-<h2 id="2-拉取pandora的Docker镜像"><a href="#2-拉取pandora的Docker镜像" class="headerlink" title="2.拉取pandora的Docker镜像"></a>2.拉取pandora的Docker镜像</h2><p>输入命令 ‘docker pull pengzhile/pandora’</p>
-<p>拉取pandora的Docker镜像<br><img src="/2023/11/16/Chatgpt%E6%9C%AC%E5%9C%B0%E9%83%A8%E7%BD%B2/dockerpull.png" class="" title="拉取docker镜像"></p>
-<h2 id="3-创建Docker容器"><a href="#3-创建Docker容器" class="headerlink" title="3.创建Docker容器"></a>3.创建Docker容器</h2><p>输入命令 ‘docker run  -e PANDORA_CLOUD=cloud -e PANDORA_SERVER=0.0.0.0:8888 -p 8888:8888 -d pengzhile/pandora’ </p>
-<p>创建并运行Docker容器，将容器映射到8888端口.部署完成后可以在界面看到对应容器.</p>
+<p>免去每次使用 GPT 都需要科学上网的麻烦</p>
+<p>该项目来源于 Github 上的项目<a href="https://github.com/pengzhile/pandora" title="潘多拉，一个让你呼吸顺畅的ChatGPT"> pandora</a></p>
+<p>本文内容参考博客 <a href="https://blog.csdn.net/kingxzq/article/details/132401393" title="原博客地址">一篇文章教你使用 Docker 本地化部署 Chatgpt （非 api，速度非常快！！！）及裸连 GPT 的方式（告别镜像 GPT）</a> 如对本文内容有疑惑请与该博客内容对照，想必会有解答.</p>
+<h2 id="1-下载安装-Docker"><a href="#1-下载安装-Docker" class="headerlink" title="1.下载安装 Docker"></a>1.下载安装 Docker</h2><p>Docker 官网： <a href="https://www.docker.com/&quot;docker官网&quot;">https://www.docker.com/</a><br><img src="/2023/11/16/Chatgpt%E6%9C%AC%E5%9C%B0%E9%83%A8%E7%BD%B2/docker.png" class="" title="docker官网"></p>
+<p>之后进行傻瓜式安装，安装完成后会关闭重启一次，打开 Docker 会看到如下界面：<br><img src="/2023/11/16/Chatgpt%E6%9C%AC%E5%9C%B0%E9%83%A8%E7%BD%B2/wslupdate.png" class="" title="需要更新wsl"></p>
+<p>提醒我们需要升级 Windows 下 linux 内核，打开 powershell，输入以下命令：<br>‘wsl —update’<br><img src="/2023/11/16/Chatgpt%E6%9C%AC%E5%9C%B0%E9%83%A8%E7%BD%B2/wsl_powershell.png" class="" title="在powershell中更新wsl"></p>
+<p>安装完后成功打开 Docker,将其最小化后打开 cmd 命令提示符</p>
+<h2 id="2-拉取-pandora-的-Docker-镜像"><a href="#2-拉取-pandora-的-Docker-镜像" class="headerlink" title="2.拉取 pandora 的 Docker 镜像"></a>2.拉取 pandora 的 Docker 镜像</h2><p>输入命令 ‘docker pull pengzhile/pandora’</p>
+<p>拉取 pandora 的 Docker 镜像<br><img src="/2023/11/16/Chatgpt%E6%9C%AC%E5%9C%B0%E9%83%A8%E7%BD%B2/dockerpull.png" class="" title="拉取docker镜像"></p>
+<h2 id="3-创建-Docker-容器"><a href="#3-创建-Docker-容器" class="headerlink" title="3.创建 Docker 容器"></a>3.创建 Docker 容器</h2><p>输入命令： </p>
+<p>‘docker run  -e PANDORA_CLOUD=cloud -e PANDORA_SERVER=0.0.0.0:8888 -p 8888:8888 -d pengzhile/pandora’ </p>
+<p>创建并运行 Docker 容器，将容器映射到 8888 端口.部署完成后可以在界面看到对应容器.</p>
 <img src="/2023/11/16/Chatgpt%E6%9C%AC%E5%9C%B0%E9%83%A8%E7%BD%B2/Dockercontainer.png" class="" title="Docker容器">
 <p>之后也可以在这里删除这个项目</p>
-<h2 id="4-登录ChatGPT"><a href="#4-登录ChatGPT" class="headerlink" title="4.登录ChatGPT"></a>4.登录ChatGPT</h2><p>打开浏览器地址输入<br>‘<a href="http://127.0.0.1:8888">http://127.0.0.1:8888</a>‘<br>端口号取决于刚才的设置，可以自定义为其他非特殊端口，例如80、443等.进入后能看到如下页面：<br><img src="/2023/11/16/Chatgpt%E6%9C%AC%E5%9C%B0%E9%83%A8%E7%BD%B2/login.png" class="" title="ChatGPT login"></p>
-<p>如果使用邮箱密码登录也需要普通科学上网，下面介绍能不需要普通科学上网的方法使用ChatGPT，并且相应速度与官网相当甚至更快.<br>使用下面Token登陆方式，能够直接裸连ChatGPT，但是只有10天的有效认证期，过期后需要重新拉取Token.如何拉取Token呢？在我们科学上网登录ChatGPT后，输入网址’<a href="https://chat.openai.com/api/auth/session&#39;回车后，如下图">https://chat.openai.com/api/auth/session&#39;回车后，如下图</a>:<br><img src="/2023/11/16/Chatgpt%E6%9C%AC%E5%9C%B0%E9%83%A8%E7%BD%B2/token.png" class="" title="Token"></p>
-<p>上图中选中的部分就是账号的Token，即accessToken后的双引号内的所有内容，我们复制粘贴到Token登陆方式的框中后点击OK.之后就成功登陆啦！</p>
+<h2 id="4-登录-ChatGPT"><a href="#4-登录-ChatGPT" class="headerlink" title="4.登录 ChatGPT"></a>4.登录 ChatGPT</h2><p>打开浏览器地址输入<br>‘<a href="http://127.0.0.1:8888">http://127.0.0.1:8888</a>‘<br>端口号取决于刚才的设置，可以自定义为其他非特殊端口，例如 80、443 等.进入后能看到如下页面：<br><img src="/2023/11/16/Chatgpt%E6%9C%AC%E5%9C%B0%E9%83%A8%E7%BD%B2/login.png" class="" title="ChatGPT login"></p>
+<p>如果使用邮箱密码登录也需要普通科学上网，下面介绍能不需要普通科学上网的方法使用 ChatGPT，并且相应速度与官网相当甚至更快.<br>使用下面 Token 登陆方式，能够直接裸连 ChatGPT，但是只有 10 天的有效认证期，过期后需要重新拉取 Token.如何拉取 Token 呢？在我们科学上网登录 ChatGPT 后，输入网址’<a href="https://chat.openai.com/api/auth/session">https://chat.openai.com/api/auth/session</a>‘ 回车后，如下图:<br><img src="/2023/11/16/Chatgpt%E6%9C%AC%E5%9C%B0%E9%83%A8%E7%BD%B2/token.png" class="" title="Token"></p>
+<p>上图中选中的部分就是账号的 Token，即 accessToken 后的双引号内的所有内容，我们复制粘贴到 Token 登陆方式的框中后点击 OK.之后就成功登陆啦！</p>
 <img src="/2023/11/16/Chatgpt%E6%9C%AC%E5%9C%B0%E9%83%A8%E7%BD%B2/ChatGPT.png" class="" title="GPT">
-<p>使用方法和官网一样，并且会同步账号的历史记录，这种方式只是绕过了GPT的Cloud flare的IP检测，之后即可畅快使用GPT，没有网络限制的烦恼，也不需要担心速度的问题.</p>
+<p>使用方法和官网一样，并且会同步账号的历史记录，这种方式只是绕过了 GPT 的 Cloud flare 的 IP 检测，之后即可畅快使用 GPT ，没有网络限制的烦恼，也不需要担心速度的问题.</p>
 ]]></content>
   </entry>
 </search>
