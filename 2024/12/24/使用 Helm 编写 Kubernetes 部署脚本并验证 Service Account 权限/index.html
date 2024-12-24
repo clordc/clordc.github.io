@@ -1,0 +1,674 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="/img/benz.jpg">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="Oscar Cui">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="使用 Helm 编写 Kubernetes 部署脚本并验证 Service Account 权限在这篇博客中，我将复盘从头开始编写一个 Helm Chart，并通过在 Kubernetes 集群中运行带有 kubectl 二进制文件的 Docker 镜像来验证 Service Account 的权限。任务的目标是使用 Helm 部署一个带有 kubectl 的容器，并验证其 Service Acc">
+<meta property="og:type" content="article">
+<meta property="og:title" content="使用 Helm 编写 Kubernetes 部署脚本并验证 Service Account 权限">
+<meta property="og:url" content="http://clordc.github.io/2024/12/24/%E4%BD%BF%E7%94%A8%20Helm%20%E7%BC%96%E5%86%99%20Kubernetes%20%E9%83%A8%E7%BD%B2%E8%84%9A%E6%9C%AC%E5%B9%B6%E9%AA%8C%E8%AF%81%20Service%20Account%20%E6%9D%83%E9%99%90/index.html">
+<meta property="og:site_name" content="崔崔的小窝">
+<meta property="og:description" content="使用 Helm 编写 Kubernetes 部署脚本并验证 Service Account 权限在这篇博客中，我将复盘从头开始编写一个 Helm Chart，并通过在 Kubernetes 集群中运行带有 kubectl 二进制文件的 Docker 镜像来验证 Service Account 的权限。任务的目标是使用 Helm 部署一个带有 kubectl 的容器，并验证其 Service Acc">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2024-12-24T04:52:20.000Z">
+<meta property="article:modified_time" content="2024-12-24T04:52:06.885Z">
+<meta property="article:author" content="Oscar Cui">
+<meta name="twitter:card" content="summary_large_image">
+  
+  
+  
+  <title>使用 Helm 编写 Kubernetes 部署脚本并验证 Service Account 权限 - 崔崔的小窝</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"clordc.github.io","root":"/","version":"1.9.4","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml"};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+
+  
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>cc&#39;s home</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                <span>首页</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>归档</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                <span>分类</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                <span>标签</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                <span>关于</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/bg.jpg') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="使用 Helm 编写 Kubernetes 部署脚本并验证 Service Account 权限"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2024-12-24 12:52" pubdate>
+          2024年12月24日 下午
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          3.5k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          30 分钟
+        
+      </span>
+    
+
+    
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">使用 Helm 编写 Kubernetes 部署脚本并验证 Service Account 权限</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <h1 id="使用-Helm-编写-Kubernetes-部署脚本并验证-Service-Account-权限"><a href="#使用-Helm-编写-Kubernetes-部署脚本并验证-Service-Account-权限" class="headerlink" title="使用 Helm 编写 Kubernetes 部署脚本并验证 Service Account 权限"></a>使用 Helm 编写 Kubernetes 部署脚本并验证 Service Account 权限</h1><p>在这篇博客中，我将复盘从头开始编写一个 Helm Chart，并通过在 Kubernetes 集群中运行带有 <code>kubectl</code> 二进制文件的 Docker 镜像来验证 Service Account 的权限。任务的目标是使用 Helm 部署一个带有 <code>kubectl</code> 的容器，并验证其 Service Account 是否具有对 Pods 资源的访问权限。</p>
+<h2 id="任务背景"><a href="#任务背景" class="headerlink" title="任务背景"></a>任务背景</h2><p>我们的任务是编写一个 Helm Chart，并部署一个包含 <code>kubectl</code> 的容器镜像。通过这个容器，我们可以直接在 Kubernetes 中运行 <code>kubectl</code> 命令来验证 <code>ServiceAccount</code> 权限。为了确保容器正常运行，我们通过 <code>sleep</code> 命令将其守护化。</p>
+<h3 id="步骤概述"><a href="#步骤概述" class="headerlink" title="步骤概述"></a>步骤概述</h3><ol>
+<li><strong>编写 Helm Chart</strong>：我们需要创建 <code>Chart.yaml</code>、<code>deployment.yaml</code>、<code>role.yaml</code>、<code>rolebindings.yaml</code>、<code>values.yaml</code> 等 Helm Chart 文件来定义 Kubernetes 资源的配置。</li>
+<li><strong>部署 Helm Chart</strong>：将 Helm Chart 部署到 Kubernetes 集群中，并启动一个包含 <code>kubectl</code> 的 Docker 镜像。</li>
+<li><strong>验证权限</strong>：验证通过 Helm 部署的 Service Account 是否能够访问 Pods 资源。</li>
+</ol>
+<h2 id="任务细节"><a href="#任务细节" class="headerlink" title="任务细节"></a>任务细节</h2><h3 id="1-编写-Helm-Chart"><a href="#1-编写-Helm-Chart" class="headerlink" title="1. 编写 Helm Chart"></a>1. 编写 Helm Chart</h3><h4 id="Chart-yaml"><a href="#Chart-yaml" class="headerlink" title="Chart.yaml"></a>Chart.yaml</h4><p><code>Chart.yaml</code> 是 Helm Chart 的元数据文件，包含了 Chart 的名称、版本和描述等信息。我们创建了如下的 <code>Chart.yaml</code> 文件：</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs yaml"><span class="hljs-attr">apiVersion:</span> <span class="hljs-string">v2</span><br><span class="hljs-attr">name:</span> <span class="hljs-string">kubectl-image</span><br><span class="hljs-attr">description:</span> <span class="hljs-string">A</span> <span class="hljs-string">Helm</span> <span class="hljs-string">chart</span> <span class="hljs-string">for</span> <span class="hljs-string">kubectl-image</span> <span class="hljs-string">deployment</span><br><span class="hljs-attr">version:</span> <span class="hljs-number">0.1</span><span class="hljs-number">.0</span><br></code></pre></td></tr></table></figure>
+<p>这个文件指定了 Helm Chart 的基本信息。</p>
+<h4 id="deployment-yaml"><a href="#deployment-yaml" class="headerlink" title="deployment.yaml"></a>deployment.yaml</h4><p><code>deployment.yaml</code>定义了 Kubernetes 的 <code>Deployment</code> 资源，它控制着容器的部署与运行。我们在 <code>deployment.yaml</code> 文件中设置了一个包含 <code>kubectl</code> 的容器，并通过 <code>sleep</code> 命令保持容器运行。</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><code class="hljs yaml"><span class="hljs-attr">apiVersion:</span> <span class="hljs-string">apps/v1</span><br><span class="hljs-attr">kind:</span> <span class="hljs-string">Deployment</span><br><span class="hljs-attr">metadata:</span><br>  <span class="hljs-attr">name:</span> <span class="hljs-string">kubectl-deployment</span><br>  <span class="hljs-attr">namespace:</span> <span class="hljs-string">default</span><br><span class="hljs-attr">spec:</span><br>  <span class="hljs-attr">replicas:</span> <span class="hljs-number">1</span><br>  <span class="hljs-attr">selector:</span><br>    <span class="hljs-attr">matchLabels:</span><br>      <span class="hljs-attr">app:</span> <span class="hljs-string">kubectl-image</span><br>  <span class="hljs-attr">template:</span><br>    <span class="hljs-attr">metadata:</span><br>      <span class="hljs-attr">labels:</span><br>        <span class="hljs-attr">app:</span> <span class="hljs-string">kubectl-image</span><br>    <span class="hljs-attr">spec:</span><br>      <span class="hljs-attr">containers:</span><br>        <span class="hljs-bullet">-</span> <span class="hljs-attr">name:</span> <span class="hljs-string">kubectl-container</span><br>          <span class="hljs-attr">image:</span> <span class="hljs-string">&quot;<span class="hljs-template-variable">&#123;&#123; .Values.image.repository &#125;&#125;</span>:<span class="hljs-template-variable">&#123;&#123; .Values.image.tag &#125;&#125;</span>&quot;</span><br>          <span class="hljs-attr">command:</span> [<span class="hljs-string">&quot;sleep&quot;</span>, <span class="hljs-string">&quot;3600&quot;</span>]  <span class="hljs-comment"># 用于保持容器运行</span><br>          <span class="hljs-attr">imagePullPolicy:</span> <span class="hljs-string">Always</span><br>      <span class="hljs-attr">serviceAccountName:</span> <span class="hljs-string">kubectl-service-account</span>  <span class="hljs-comment"># 使用服务账户</span><br>      <span class="hljs-attr">imagePullSecrets:</span><br>      <span class="hljs-bullet">-</span> <span class="hljs-attr">name:</span> <span class="hljs-string">my-registry-secret</span><br></code></pre></td></tr></table></figure>
+<p>在这个配置中，我们使用了 <code>serviceAccountName</code> 来指定容器应该使用的 Service Account（<code>kubectl-service-account</code>）。同时，<code>command</code> 使用 <code>sleep 3600</code> 来保证容器持续运行。</p>
+<h4 id="role-yaml"><a href="#role-yaml" class="headerlink" title="role.yaml"></a>role.yaml</h4><p><code>role.yaml</code> 定义了一个 Role，允许它对 <code>pods</code> 资源执行基本的操作（如列出、查看、创建、更新、删除）。这个 Role 将赋予我们的 Service Account 相关的权限。</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs yaml"><span class="hljs-attr">apiVersion:</span> <span class="hljs-string">rbac.authorization.k8s.io/v1</span><br><span class="hljs-attr">kind:</span> <span class="hljs-string">Role</span><br><span class="hljs-attr">metadata:</span><br>  <span class="hljs-attr">namespace:</span> <span class="hljs-string">default</span><br>  <span class="hljs-attr">name:</span> <span class="hljs-string">kubectl-role</span><br><span class="hljs-attr">rules:</span><br>  <span class="hljs-bullet">-</span> <span class="hljs-attr">apiGroups:</span> [<span class="hljs-string">&quot;&quot;</span>]<br>    <span class="hljs-attr">resources:</span> [<span class="hljs-string">&quot;pods&quot;</span>]<br>    <span class="hljs-attr">verbs:</span> [<span class="hljs-string">&quot;list&quot;</span>, <span class="hljs-string">&quot;get&quot;</span>, <span class="hljs-string">&quot;create&quot;</span>, <span class="hljs-string">&quot;update&quot;</span>, <span class="hljs-string">&quot;delete&quot;</span>]<br></code></pre></td></tr></table></figure>
+<h4 id="rolebindings-yaml"><a href="#rolebindings-yaml" class="headerlink" title="rolebindings.yaml"></a>rolebindings.yaml</h4><p><code>rolebindings.yaml</code> 文件将 <code>Role</code> 与我们的 <code>ServiceAccount</code> 关联起来，确保 <code>kubectl-service-account</code> 拥有对 <code>pods</code> 的权限。</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><code class="hljs yaml"><span class="hljs-attr">apiVersion:</span> <span class="hljs-string">rbac.authorization.k8s.io/v1</span><br><span class="hljs-attr">kind:</span> <span class="hljs-string">RoleBinding</span><br><span class="hljs-attr">metadata:</span><br>  <span class="hljs-attr">name:</span> <span class="hljs-string">kubectl-role-binding</span><br>  <span class="hljs-attr">namespace:</span> <span class="hljs-string">default</span><br><span class="hljs-attr">subjects:</span><br>  <span class="hljs-bullet">-</span> <span class="hljs-attr">kind:</span> <span class="hljs-string">ServiceAccount</span><br>    <span class="hljs-attr">name:</span> <span class="hljs-string">kubectl-service-account</span><br>    <span class="hljs-attr">namespace:</span> <span class="hljs-string">default</span><br><span class="hljs-attr">roleRef:</span><br>  <span class="hljs-attr">kind:</span> <span class="hljs-string">Role</span><br>  <span class="hljs-attr">name:</span> <span class="hljs-string">kubectl-role</span><br>  <span class="hljs-attr">apiGroup:</span> <span class="hljs-string">rbac.authorization.k8s.io</span><br></code></pre></td></tr></table></figure>
+<h4 id="values-yaml"><a href="#values-yaml" class="headerlink" title="values.yaml"></a>values.yaml</h4><p><code>values.yaml</code> 文件用于定义 Helm Chart 的默认值。我们设置了容器镜像的默认仓库和标签，以及服务账户的相关配置.</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><code class="hljs yaml"><span class="hljs-attr">image:</span><br>  <span class="hljs-attr">repository:</span> <span class="hljs-string">build-releases-external.common.repositories.cloud.sap/bitnami/kubectl</span><br>  <span class="hljs-attr">tag:</span> <span class="hljs-string">latest</span><br><span class="hljs-attr">service:</span><br>  <span class="hljs-attr">port:</span> <span class="hljs-number">8080</span><br><span class="hljs-attr">serviceAccount:</span><br>  <span class="hljs-attr">create:</span> <span class="hljs-literal">true</span><br>  <span class="hljs-attr">name:</span> <span class="hljs-string">kubectl-service-account</span><br>  <span class="hljs-attr">automount:</span> <span class="hljs-literal">true</span><br><span class="hljs-attr">ingress:</span><br>  <span class="hljs-attr">enabled:</span> <span class="hljs-literal">true</span><br><span class="hljs-attr">autoscaling:</span><br>  <span class="hljs-attr">enabled:</span> <span class="hljs-literal">true</span><br></code></pre></td></tr></table></figure>
+<h3 id="2-部署-Helm-Chart"><a href="#2-部署-Helm-Chart" class="headerlink" title="2.部署 Helm Chart"></a>2.部署 Helm Chart</h3><p>完成 Helm Chart 的编写后，我们使用以下命令在 Kubernetes 集群中部署它：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">helm install kubectl-image ./mychart<br></code></pre></td></tr></table></figure>
+<p>这个命令将 Helm Chart 部署到 Kubernetes 集群，并启动一个带有 <code>kubectl</code> 的容器。容器运行后，我们就可以验证配置的权限。</p>
+<h3 id="3-验证-Service-Account-权限"><a href="#3-验证-Service-Account-权限" class="headerlink" title="3.验证 Service Account 权限"></a>3.验证 Service Account 权限</h3><p>为了验证 <code>kubectl-service-account</code> 是否具有访问 Pods 的权限，我们进入容器并尝试运行一些 <code>kubectl</code> 命令。以下是我们执行的步骤：</p>
+<ol>
+<li>进入容器: 我们使用 <code>kubectl exec</code> 命令进入容器：<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">kubectl <span class="hljs-built_in">exec</span> -it kubectl-deployment-xxxx -- /bin/bash<br></code></pre></td></tr></table></figure></li>
+<li>验证权限： 在容器中，我们运行以下 <code>kubectl</code> 命令来验证 Service Account 的权限：</li>
+</ol>
+<ul>
+<li>列出Pods:<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">kubectl get pods<br></code></pre></td></tr></table></figure></li>
+<li>获取Pod的详细信息：<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">kubectl describe pod &lt;pod-name&gt;<br></code></pre></td></tr></table></figure></li>
+<li>创建、更新或删除 Pod：<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">kubectl delete pod &lt;pod-name&gt;<br></code></pre></td></tr></table></figure>
+由于我们的 <code>kubectl-service-account</code> 仅被授予了对 <code>pods</code> 资源的权限，它能够执行与 Pods 相关的操作，但无法执行与其他 Kubernetes 资源（如 Deployments、Services 等）相关的操作。</li>
+</ul>
+<h4 id="总结与反思"><a href="#总结与反思" class="headerlink" title="总结与反思"></a>总结与反思</h4><p>在本次任务中，我们成功地使用 Helm 编写了一个 Kubernetes 部署脚本，并验证了通过 Service Account 控制访问权限的方式。通过部署带有 kubectl 的容器并验证 Service Account，我们确保了权限的配置是正确的，且容器能够正常使用 kubectl 命令与 Kubernetes 集群交互。</p>
+<p>这次任务让我深入了解了如何使用 Helm 进行 Kubernetes 资源的自动化管理，如何配置 RBAC（Role-Based Access Control）以精细化管理 Service Account 的权限，并且加深了对 Helm Chart 工作原理和 Kubernetes 部署流程的理解。</p>
+<p>如果你有类似的需求，使用 Helm 来管理 Kubernetes 配置和部署非常方便，可以有效地简化集群资源的管理和维护过程。</p>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>使用 Helm 编写 Kubernetes 部署脚本并验证 Service Account 权限</div>
+      <div>http://clordc.github.io/2024/12/24/使用 Helm 编写 Kubernetes 部署脚本并验证 Service Account 权限/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>Oscar Cui</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2024年12月24日</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>许可协议</div>
+          <div>
+            
+              
+              
+                <a target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                    <i class="iconfont icon-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2024/12/23/hello-world/" title="Hello World">
+                        <span class="hidden-mobile">Hello World</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+  
+  
+    <article id="comments" lazyload>
+      
+  <div id="gitalk-container"></div>
+  <script type="text/javascript">
+    Fluid.utils.loadComments('#gitalk-container', function() {
+      Fluid.utils.createCssLink('/css/gitalk.css')
+      Fluid.utils.createScript('https://lib.baomitu.com/gitalk/1.8.0/gitalk.min.js', function() {
+        var options = Object.assign(
+          {"clientID":"b1e31edd097d2c47df0f","clientSecret":"a0312ee318c7c5e94fb2a7e1249af429d1ee0110","repo":"clordc.github.io","owner":"clordc","admin":["clordc"],"language":"zh-CN","labels":["Gitalk"],"perPage":10,"pagerDirection":"last","distractionFreeMode":true,"createIssueManually":true,"proxy":"https://cloudflare-cors-anywhere.bencorn.com/?https://github.com/login/oauth/access_token"},
+          {
+            id: '8427451938fcb73713fbff42240576e1'
+          }
+        )
+        var gitalk = new Gitalk(options);
+        gitalk.render('gitalk-container');
+      });
+    });
+  </script>
+  <noscript>Please enable JavaScript to view the comments</noscript>
+
+
+    </article>
+  
+
+
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>目录</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+    </div>
+  
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.0/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.18.2/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>
